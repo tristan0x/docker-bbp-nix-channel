@@ -26,6 +26,23 @@ nix-channel --add http://localhost/channels/bbp-nixpkgs-unstable
 nix-channel --update
 ```
 
+# Workaround
+
+## EPFL Linux workstation
+
+NIX won't be able to fetch BBP source code on EPFL Linux workstations because of an authentication issue. A workaround is to provide Nix the required shared library with the following commands:
+
+```
+mkdir -p /nix/var/nix/ext/nss/lib
+ln -s /lib/x86_64-linux-gnu/libnss_sss.so.2 /nix/var/nix/ext/nss/lib/
+```
+
+Then add this following line in your `~/.profile`:
+
+```
+export NSS_LIB_PATH=/nix/var/nix/ext/nss/lib
+```
+
 # LICENSE
 
 MIT License. See [LICENSE](./LICENSE) file for more information
