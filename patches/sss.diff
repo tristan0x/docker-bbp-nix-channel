@@ -28,7 +28,7 @@ diff -x .git -r -u nix-exprs/std-nixpkgs/pkgs/build-support/fetchgit/private.nix
      else null;
    GIT_SSH = writeScript "fetchgit-ssh" ''
      #! ${stdenv.shell}
-+    export LD_LIBRARY_PATH=${NSS_LIB_PATH}:$LD_LIBRARY_PATH
++    export LD_LIBRARY_PATH=$NSS_LIB_PATH:$LD_LIBRARY_PATH
      exec -a ssh ${openssh}/bin/ssh -F ${let
        sshConfigFile = if (builtins.tryEval <ssh-config-file>).success
          then <ssh-config-file>
