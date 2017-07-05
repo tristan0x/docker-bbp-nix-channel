@@ -12,10 +12,19 @@ It constructs a Docker image providing:
 # Usage
 
 ```
-docker run -p 8080:80 tristan0x/bbp_nix_channel
+docker run -d -p 80:80 tristan0x/bbp-nix-channel
 ```
 
 Then you can visit the channel at: http://localhost:8080
+
+# Register the NIX channel
+
+Once the container is started:
+
+```
+nix-channel --add http://localhost/channels/bbp-nixpkgs-unstable
+nix-channel --update
+```
 
 # LICENSE
 
