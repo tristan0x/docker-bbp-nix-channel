@@ -1,0 +1,34 @@
+diff -x .git -r -u nix-exprs/std-nixpkgs/pkgs/build-support/fetchgit/default.nix nix-exprs-sss/std-nixpkgs/pkgs/build-support/fetchgit/default.nix
+--- nix-exprs/std-nixpkgs/pkgs/build-support/fetchgit/default.nix	2017-07-04 16:00:41.577737410 +0200
++++ nix-exprs-sss/std-nixpkgs/pkgs/build-support/fetchgit/default.nix	2017-07-04 16:12:04.547240753 +0200
+@@ -61,7 +61,7 @@
+     # easy proxy configuration.  This is impure, but a fixed-output
+     # derivation like fetchurl is allowed to do so since its result is
+     # by definition pure.
+-    "http_proxy" "https_proxy" "ftp_proxy" "all_proxy" "no_proxy"
++    "http_proxy" "https_proxy" "ftp_proxy" "all_proxy" "no_proxy" "NSS_LIB_PATH"
+     ];
+ 
+   preferLocalBuild = true;
+diff -x .git -r -u nix-exprs/std-nixpkgs/pkgs/build-support/fetchgit/nix-prefetch-git nix-exprs-sss/std-nixpkgs/pkgs/build-support/fetchgit/nix-prefetch-git
+--- nix-exprs/std-nixpkgs/pkgs/build-support/fetchgit/nix-prefetch-git	2017-07-04 16:00:41.577737410 +0200
++++ nix-exprs-sss/std-nixpkgs/pkgs/build-support/fetchgit/nix-prefetch-git	2017-07-04 16:12:04.547240753 +0200
+@@ -22,6 +22,7 @@
+     leaveDotGit=true
+ fi
+ 
++export LD_LIBRARY_PATH=${NSS_LIB_PATH}:$LD_LIBRARY_PATH
+ 
+ argi=0
+ argfun=""
+diff -x .git -r -u nix-exprs/std-nixpkgs/pkgs/build-support/fetchgit/private.nix nix-exprs-sss/std-nixpkgs/pkgs/build-support/fetchgit/private.nix
+--- nix-exprs/std-nixpkgs/pkgs/build-support/fetchgit/private.nix	2017-07-04 16:00:41.577737410 +0200
++++ nix-exprs-sss/std-nixpkgs/pkgs/build-support/fetchgit/private.nix	2017-07-04 16:12:04.547240753 +0200
+@@ -4,6 +4,7 @@
+     else null;
+   GIT_SSH = writeScript "fetchgit-ssh" ''
+     #! ${stdenv.shell}
++    export LD_LIBRARY_PATH=${NSS_LIB_PATH}:$LD_LIBRARY_PATH
+     exec -a ssh ${openssh}/bin/ssh -F ${let
+       sshConfigFile = if (builtins.tryEval <ssh-config-file>).success
+         then <ssh-config-file>
