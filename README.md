@@ -15,7 +15,7 @@ It constructs a Docker image providing:
 docker run -d -p 80:80 tristan0x/bbp-nix-channel
 ```
 
-Then you can visit the channel at: http://localhost:8080
+Then you can visit the channel at: http://localhost
 
 # Register the NIX channel
 
