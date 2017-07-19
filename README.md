@@ -72,8 +72,8 @@ export NSS_LIB_PATH=/nix/var/nix/ext/nss/lib
 # Swift synchronization
 
 This Docker image is also able to synchronize a Swift object store with the NIX expressions GitHub
-repository. To do so, you have to write a file with the following environment variables and pass the
-file to Docker when starting the container:
+repository. To do so, you have to write `swift.env` text file with the following environment variables
+and pass the file to Docker when starting the container:
 
 ```
 SWIFT_SYNC=on
@@ -88,7 +88,7 @@ OS_REGION_NAME=geneva
 OS_USER_DOMAIN_NAME=bbp
 ```
 
-docker run -d -p 80:80 --env-file=FILE tristan0x/bbp-nix-channel
+docker run -d -p 80:80 --env-file=swift.env tristan0x/bbp-nix-channel
 
 # LICENSE
 
