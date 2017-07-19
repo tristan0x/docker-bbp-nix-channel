@@ -69,6 +69,27 @@ Then add this following line in your `~/.profile`:
 export NSS_LIB_PATH=/nix/var/nix/ext/nss/lib
 ```
 
+# Swift synchronization
+
+This Docker image is also able to synchronize a Swift object store with the NIX expressions GitHub
+repository. To do so, you have to write a file with the following environment variables and pass the
+file to Docker when starting the container:
+
+```
+SWIFT_SYNC=on
+OS_AUTH_URL=https://bbpopenstack.epfl.ch:5000/v3
+OS_IDENTITY_API_VERSION=3
+OS_INTERFACE=public
+OS_USERNAME=YOUR-USERNAME
+OS_PASSWORD=**********
+OS_PROJECT_ID=7b31f31637944288b319cd6fa00a5701
+OS_PROJECT_NAME=bbp-ou-hpc
+OS_REGION_NAME=geneva
+OS_USER_DOMAIN_NAME=bbp
+```
+
+docker run -d -p 80:80 --env-file=FILE tristan0x/bbp-nix-channel
+
 # LICENSE
 
 MIT License. See [LICENSE](./LICENSE) file for more information

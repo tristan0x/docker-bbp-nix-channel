@@ -15,6 +15,7 @@ from subprocess import (
 import sys
 import tempfile
 
+from swiftclient.service import SwiftService, SwiftUploadObject
 
 CHANNEL = 'bbp-nixpkgs-unstable'
 CHANNELS_PATH = '/usr/share/nginx/html'
@@ -26,6 +27,22 @@ PATCHES_PATH = '/opt/src/nixexprs/patches'
 LOGGER = logging.getLogger('nixexprs')
 FNULL = open(os.devnull, 'w')
 check_calls = [check_call]  # modified in daemon mode
+
+OPEN_STACK_CONTAINER = 'nix-channel'
+
+
+def swift_upload_files(files, container=None):
+    """Upload files to an openstack container
+    files: list of file paths
+    """
+    container = container or OPEN_STACK_CONTAINER
+    with SwiftService() as swift:
+        for resp in swift.upload(container, files):
+            if not resp['success']:
+                LOGGER.error('Failed to upload object %s to container %s: %s',
+                             resp['object'], container, resp['error'])
+            else:
+                LOGGER.warn('Successfully uploaded object %s', repr(resp))
 
 
 @contextlib.contextmanager
@@ -65,6 +82,7 @@ def getopt():
     parser.add_argument('--nix-exprs-git-url', default=NIX_EXPRS_GIT_URL)
     parser.add_argument('--nix-exprs-git-branch', default=NIX_EXPRS_GIT_BRANCH)
     parser.add_argument('--binary-cache-url', default=BINARY_CACHE_URL)
+    parser.add_argument('--swift-sync', action='store_true')
     return parser
 
 
@@ -73,7 +91,8 @@ def synchronize_nix_expressions(**kwargs):
     """
     git_clone_path = kwargs.get('git_clone_path') or GIT_CLONE_PATH
     nix_exprs_git_url = kwargs.get('nix_exprs_git_url') or NIX_EXPRS_GIT_URL
-    nix_exprs_git_branch = kwargs.get('nix_exprs_git_branch') or NIX_EXPRS_GIT_BRANCH
+    nix_exprs_git_branch = kwargs.get('nix_exprs_git_branch') \
+        or NIX_EXPRS_GIT_BRANCH
     patches_path = kwargs.get('patches_path') or PATCHES_PATH
     tarball_outdated = False
     if not osp.isdir(git_clone_path):
@@ -152,6 +171,9 @@ def update_nixexprs_tarball(**kwargs):
             archive = archive + '.bz2'
             if not osp.isdir(osp.dirname(dist_archive)):
                 os.makedirs(osp.dirname(dist_archive))
+            if kwargs.get('swift_sync'):
+                tasks = [SwiftUploadObject(archive, object_name='nixexprs.tar.bz2')]
+                swift_upload_files(tasks)
             LOGGER.warn('Publishing new NIX expressions')
             shutil.move(archive, dist_archive)
 
@@ -196,11 +218,14 @@ def main():
     elif args.verbose > 1:
         level = logging.DEBUG
     LOGGER.setLevel(level)
-    if args.daemon:
+    args = vars(args)
+    if os.environ.get('SWIFT_SYNC'):
+        args.update(swift_sync=True)
+    if args['daemon']:
         check_calls[0] = partial(check_call, stdout=sys.stderr)
-        run_daemon(**vars(args))
+        run_daemon(**args)
     else:
-        synchronize_nix_expressions(**vars(args))
+        synchronize_nix_expressions(**args)
 
 
 if __name__ == '__main__':
