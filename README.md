@@ -11,11 +11,37 @@ It constructs a Docker image providing:
 
 # Usage
 
+## Start the container
+
 ```
 docker run -d -p 80:80 tristan0x/bbp-nix-channel
 ```
 
 Then you can visit the channel at: http://localhost
+
+## Configure your NIX environment to use this channel
+
+### One timer
+
+```
+nix-channel --add http://localhost/channels/bbp-nixpkgs-unstable
+nix-channel --update
+```
+
+### Add the following line to ~/.profile
+
+```shell
+# setup SSH for gerrit access
+if [[ "${NIX_PATH}"  != *"ssh-config-file"* ]]; then
+        export NIX_PATH="ssh-config-file=$HOME/.ssh/config:$NIX_PATH"
+fi
+# setup SSH agent forwarding
+if [[ "${SSH_AUTH_SOCK}x" != "x" ]]; then
+        export NIX_PATH="ssh-auth-sock=${SSH_AUTH_SOCK}:${NIX_PATH}"
+fi
+
+export NIX_PATH="bbp=$HOME/.nix-defexpr/channels/bbp-nixpkgs:${NIX_PATH}"
+```
 
 # Register the NIX channel
 
