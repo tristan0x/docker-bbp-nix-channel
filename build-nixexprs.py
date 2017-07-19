@@ -20,6 +20,7 @@ CHANNEL = 'bbp-nixpkgs-unstable'
 CHANNELS_PATH = '/usr/share/nginx/html'
 GIT_CLONE_PATH = '/tmp/nix-exprs'
 NIX_EXPRS_GIT_URL = 'https://github.com/BlueBrain/bbp-nixpkgs.git'
+NIX_EXPRS_GIT_BRANCH = None
 BINARY_CACHE_URL = 'http://bbpnixcache.epfl.ch'
 PATCHES_PATH = '/opt/src/nixexprs/patches'
 LOGGER = logging.getLogger('nixexprs')
@@ -62,6 +63,7 @@ def getopt():
     parser.add_argument('--channel', default=CHANNEL)
     parser.add_argument('--git-clone-path', default=GIT_CLONE_PATH)
     parser.add_argument('--nix-exprs-git-url', default=NIX_EXPRS_GIT_URL)
+    parser.add_argument('--nix-exprs-git-branch', default=NIX_EXPRS_GIT_BRANCH)
     parser.add_argument('--binary-cache-url', default=BINARY_CACHE_URL)
     return parser
 
@@ -71,6 +73,7 @@ def synchronize_nix_expressions(**kwargs):
     """
     git_clone_path = kwargs.get('git_clone_path') or GIT_CLONE_PATH
     nix_exprs_git_url = kwargs.get('nix_exprs_git_url') or NIX_EXPRS_GIT_URL
+    nix_exprs_git_branch = kwargs.get('nix_exprs_git_branch') or NIX_EXPRS_GIT_BRANCH
     patches_path = kwargs.get('patches_path') or PATCHES_PATH
     tarball_outdated = False
     if not osp.isdir(git_clone_path):
@@ -78,6 +81,8 @@ def synchronize_nix_expressions(**kwargs):
         check_calls[0](['git', 'clone', '--recursive',
                         nix_exprs_git_url, git_clone_path])
         with pushd(git_clone_path):
+            if nix_exprs_git_branch is not None:
+                check_calls[0](['git', 'checkout', nix_exprs_git_branch])
             for patch in os.listdir(patches_path):
                 patch_file = osp.join(patches_path, patch)
                 LOGGER.info('Applying patch: %s', patch_file)
