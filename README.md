@@ -7,7 +7,7 @@ It constructs a Docker image providing:
 
 * a NIX channel of Blue Brain Project packages over a NGINX web server
 * a background process that keep the published channel synchronized when the GitHub repository
-  hosting the [BBP NIX expressions](https://github.com/BlueBrain/bbp-nixpkgs) is updated.
+  hosting the [BBP NIX expressions](https://github.com/BlueBrain/bbp-pkgs) is updated.
 
 # Usage
 
@@ -24,7 +24,7 @@ Then you can visit the channel at: http://localhost
 ### One timer
 
 ```
-nix-channel --add http://localhost/channels/bbp-nixpkgs-unstable
+nix-channel --add http://localhost/channels/bbp-pkgs-unstable
 nix-channel --update
 ```
 
@@ -40,7 +40,7 @@ if [[ "${SSH_AUTH_SOCK}x" != "x" ]]; then
         export NIX_PATH="ssh-auth-sock=${SSH_AUTH_SOCK}:${NIX_PATH}"
 fi
 
-export NIX_PATH="bbp=$HOME/.nix-defexpr/channels/bbp-nixpkgs:${NIX_PATH}"
+export NIX_PATH="bbp=$HOME/.nix-defexpr/channels/bbp-pkgs:${NIX_PATH}"
 ```
 
 # Register the NIX channel
@@ -48,7 +48,7 @@ export NIX_PATH="bbp=$HOME/.nix-defexpr/channels/bbp-nixpkgs:${NIX_PATH}"
 Once the container is started:
 
 ```
-nix-channel --add http://localhost/channels/bbp-nixpkgs-unstable
+nix-channel --add http://localhost/channels/bbp-pkgs-unstable
 nix-channel --update
 ```
 
