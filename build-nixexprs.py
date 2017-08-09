@@ -20,7 +20,7 @@ from swiftclient.service import SwiftService, SwiftUploadObject
 CHANNEL = 'bbp-pkgs-unstable'
 CHANNELS_PATH = '/usr/share/nginx/html'
 GIT_CLONE_PATH = '/tmp/nix-exprs'
-NIX_EXPRS_GIT_URL = 'https://github.com/BlueBrain/bbp-pkgs.git'
+NIX_EXPRS_GIT_URL = 'https://github.com/BlueBrain/bbp-nixpkgs.git'
 NIX_EXPRS_GIT_BRANCH = None
 BINARY_CACHE_URL = 'http://bbpnixcache.epfl.ch'
 PATCHES_PATH = '/opt/src/nixexprs/patches'
