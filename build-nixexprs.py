@@ -172,7 +172,8 @@ def update_nixexprs_tarball(**kwargs):
             if not osp.isdir(osp.dirname(dist_archive)):
                 os.makedirs(osp.dirname(dist_archive))
             if kwargs.get('swift_sync'):
-                tasks = [SwiftUploadObject(archive, object_name='nixexprs.tar.bz2')]
+                tasks = [SwiftUploadObject(archive,
+                                           object_name='nixexprs.tar.bz2')]
                 swift_upload_files(tasks)
             LOGGER.warn('Publishing new NIX expressions')
             shutil.move(archive, dist_archive)
@@ -219,6 +220,10 @@ def main():
         level = logging.DEBUG
     LOGGER.setLevel(level)
     args = vars(args)
+    http_proxy = os.environ.get('HTTP_PROXY')
+    if http_proxy is not None:
+        check_call(['git', 'config', '--global',
+                    '--add', 'http.proxy', http_proxy])
     if os.environ.get('SWIFT_SYNC'):
         args.update(swift_sync=True)
     if args['daemon']:
